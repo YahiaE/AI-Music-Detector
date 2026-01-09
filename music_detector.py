@@ -65,3 +65,24 @@ for i in range(
         "\nMFCC:",
         mfccs,
     )
+
+for i in range(1, 6):
+    y, sr = librosa.load(os.path.join(f"data\\human\\human_audio_{i}.wav"))
+
+    onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+    t = librosa.feature.tempo(onset_envelope=onset_env, sr=sr)
+    s_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr)
+
+    print(
+        "\nAmp over time:",
+        y,
+        "\nSampling Rate:",
+        sr,
+        "\nTempo:",
+        t,
+        "\nSpectral Centroid:",
+        s_cent,
+        "\nMFCC:",
+        mfccs,
+    )
