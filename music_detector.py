@@ -69,8 +69,8 @@ for i in range(
     mfccs_shapes_ai.append(mfccs.shape)
 
 print(
-    "\nAvergage amp over time:",
-    (np.sum(total_ats_ai) / total_ats_ai.size),
+    "\nAverage absolute amp:",
+    (np.sum(np.abs(total_ats_ai)) / total_ats_ai.size),
     "\nSampling Rate:",
     sr,
     "\nTempo:",
@@ -88,9 +88,9 @@ time = (
     total_ats_ai.size // sample_rate
 )  # Seconds = total # of samples / sample_rate (# of samples per second) => equals to 30 seconds
 
-# Plots absol
+# Plots average absolute amplitude per second
 ax.plot(
-    np.arange(time),  # X-Axis
+    np.arange(time),
     [
         np.mean(np.abs(total_ats_ai[i * sr : (i + 1) * sr])) for i in range(time)
     ],  # Y-Axis (average of absolute amplitude per sample group (dependent on sample rate)). Absolute amplitude is more accurate to represent loudness + Positive/Negative amplitudes can cancel out, which can make the graph misleading
