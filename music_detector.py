@@ -58,7 +58,7 @@ for i in range(
     | 500            | 2         |
     | 1000           | 1         | 
     """
-    s_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    s_cent = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
     total_spectral_centroids_ai += s_cent
 
     """
@@ -81,20 +81,36 @@ print(
     mfccs_shapes_ai,
 )
 
-print(total_ats_ai.size)
-fig, ax = plt.subplots()
+# print(total_ats_ai.size)
+fig, axes = plt.subplots(2)
 # Sample = Measurement of amplitude at a very specific point in time. The # of samples is dependent on the sampling rate (# of samples taken per second)
 time = (
     total_ats_ai.size // sample_rate
 )  # Seconds = total # of samples / sample_rate (# of samples per second) => equals to 30 seconds
-
+axes[0].set_xlabel("Time (seconds)")
+axes[0].set_ylabel("Average Absolute Amplitude")
 # Plots average absolute amplitude per second
-ax.plot(
+axes[0].plot(
     np.arange(time),
     [
         np.mean(np.abs(total_ats_ai[i * sr : (i + 1) * sr])) for i in range(time)
     ],  # Y-Axis (average of absolute amplitude per sample group (dependent on sample rate)). Absolute amplitude is more accurate to represent loudness + Positive/Negative amplitudes can cancel out, which can make the graph misleading
 )
+
+# Plots total spectral centroids per second
+# plt.show()
+avg_centroids = total_spectral_centroids_ai / 5
+
+# Convert frames to time
+times = librosa.frames_to_time(np.arange(len(avg_centroids)), sr=sr, hop_length=512)
+
+# Plot ALL ~1,292 points (not averaged by second)
+axes[1].plot(times, avg_centroids)
+axes[1].set_xlabel("Time (seconds)")
+axes[1].set_ylabel("Average Spectral Centroid (Hz)")
+
+print(total_ats_ai.size)
+print(total_spectral_centroids_ai.size)
 plt.show()
 
 
