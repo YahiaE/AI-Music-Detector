@@ -11,13 +11,14 @@ py arrays)
 
 import librosa
 import os.path
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
 total_tempo_ai = 0
 total_spectral_centroids_ai = 0
 total_ats_ai = 0
-mfccs_shapes_ai = []
+mfcc_shapes_ai = []
 sample_rate = 0
 
 
@@ -28,6 +29,11 @@ for i in range(
     y, sr = librosa.load(os.path.join(f"data\\ai\\ai_audio_{i}.wav"))
     sample_rate = sr
     total_ats_ai += y
+
+    secs = y.size // sample_rate
+
+    avg_abs_amp = np.sum(np.abs(y)) / y.size
+    print(f"Average Absolute Amplitude For AI Song #{i}: {avg_abs_amp}")
     """
     Onset Strength => How much a sound has changed compared to the moment before
     - Characteristics used to measure the change = Frequency, Amplitude, Tone (texture of the sound)
@@ -35,6 +41,7 @@ for i in range(
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
     # tempo measures how often a pattern of changes in the sound occur over time, which is why onset_strength is needed
     t = librosa.feature.tempo(onset_envelope=onset_env, sr=sr)[0]
+    print(f"Tempo For AI Song #{i}: {t}")
 
     total_tempo_ai += t
 
@@ -65,8 +72,9 @@ for i in range(
     [Expand on this definition / meaning]
     MFCC (Mel-Frequency Cepstral Coefficients): Describes the timbre / shape of a sound. 
     """
-    mfccs = librosa.feature.mfcc(y=y, sr=sr)
-    mfccs_shapes_ai.append(mfccs.shape)
+    mfcc = librosa.feature.mfcc(y=y, sr=sr)
+    mfcc_shapes_ai.append(mfcc.shape)
+    print(f"MFCC For AI Song #{i}: {mfcc.shape}\n")
 
 print(
     "\nAverage absolute amp:",
@@ -74,11 +82,13 @@ print(
     "\nSampling Rate:",
     sr,
     "\nTempo:",
-    total_tempo_ai / 6,
+    math.floor(total_tempo_ai / 6),
     "\nSpectral Centroid:",
-    (np.sum(total_spectral_centroids_ai) / total_spectral_centroids_ai.size),
+    math.floor(
+        (np.sum(total_spectral_centroids_ai) / total_spectral_centroids_ai.size)
+    ),
     "\nMFCC:",
-    mfccs_shapes_ai,
+    mfcc_shapes_ai,
 )
 
 # print(total_ats_ai.size)
